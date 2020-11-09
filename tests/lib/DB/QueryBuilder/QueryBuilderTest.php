@@ -314,6 +314,34 @@ class QueryBuilderTest extends \Test\TestCase {
 		$this->deleteTestingRows('testFirstResult2');
 	}
 
+	public function testSelectDistinctMultiple() {
+		$this->deleteTestingRows('testFirstResult1');
+		$this->deleteTestingRows('testFirstResult2');
+		$this->createTestingRows('testFirstResult1');
+		$this->createTestingRows('testFirstResult2');
+
+		$this->queryBuilder->selectDistinct(['appid', 'value']);
+
+		$this->queryBuilder->from('*PREFIX*appconfig')
+			->where($this->queryBuilder->expr()->in(
+				'appid',
+				[$this->queryBuilder->expr()->literal('testFirstResult1'), $this->queryBuilder->expr()->literal('testFirstResult2')]
+			))
+			->orderBy('appid', 'DESC');
+
+		$query = $this->queryBuilder->execute();
+		$rows = $query->fetchAll();
+		$query->closeCursor();
+
+		$this->assertEquals(
+			[['appid' => 'testFirstResult2', '"value"' => 'value'], ['appid' => 'testFirstResult1', '"value"' => 'value']],
+			$rows
+		);
+
+		$this->deleteTestingRows('testFirstResult1');
+		$this->deleteTestingRows('testFirstResult2');
+	}
+
 	public function dataAddSelect() {
 		$config = $this->createMock(SystemConfig::class);
 		$logger = $this->createMock(ILogger::class);
