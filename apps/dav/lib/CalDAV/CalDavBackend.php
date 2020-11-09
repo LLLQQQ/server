@@ -244,7 +244,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			->from('calendars');
 
 		if ($principalUri === '') {
-			$query->where($query->expr()->isNull('principaluri'));
+			$query->where($query->expr()->emptyString('principaluri'));
 		} else {
 			$query->where($query->expr()->eq('principaluri', $query->createNamedParameter($principalUri)));
 		}
@@ -302,7 +302,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			->orderBy('calendarorder', 'ASC');
 
 		if ($principalUri === '') {
-			$query->where($query->expr()->isNull('principaluri'));
+			$query->where($query->expr()->emptyString('principaluri'));
 		} else {
 			$query->where($query->expr()->eq('principaluri', $query->createNamedParameter($principalUri)));
 		}
